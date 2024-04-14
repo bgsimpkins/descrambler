@@ -21,9 +21,9 @@ def descrambler_service():
         filename = 'descrambleResults_{}.txt'.format(id)
         with open(filename) as f:
             d = json.load(f)
+            os.remove(filename)
             return d
 
-        os.remove(filename)
     else:
         print('Nothing to process. Are you simple??')
         return 'You are a simple person!'
@@ -33,7 +33,9 @@ def descrambler_service():
 
 @app.route('/descrambler', methods=['GET','POST'])
 def descrambler_app():
-    pass
+    return render_template(
+        'descrambler.html',
+    )
 
 
 if __name__ == '__main__':

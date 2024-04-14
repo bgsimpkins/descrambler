@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script>
+
+			jQuery.ajaxSetup({
+			  beforeSend: function() {
+				  $('#refreshingPanel').show();
+			  },
+			  complete: function(){
+				  $('#refreshingPanel').hide();
+			  },
+			  success: function() {}
+			});
+
+		   $(document).ready(function()
+			{
+		      ////Use jquery to populate solution div
+		      $("#calculateButton").mousedown(function()
+			   {
+			      $("#solution").empty();
+
+               var beginTime = $.now();
+ 					var url = "descrambler_service?request=getScrambleSolution&scrambleProblem="+$("#scrambleProblem").val();
+               //$("#solution").append("<div id='waitDiv'><img src='Loading.gif'>&nbsp;&nbsp;Calling service: "+url+"<br><br></div>");
+
+
+					$.getJSON(url, function(data, status)
+					{
+						var timeElapsed = $.now() - beginTime;
+						$("#solution").append("<i>Calculation took "+(timeElapsed/1000)+" seconds<i>");
+						$("#solution").append("<h2>Solutions:</h2>");
+						var newLength = 100;
+						$.each( data, function( key, val )
+						{
+							//Data should be sorted by word length (descending).
+							//Check to see if word length has changed. If so, insert header.
+							if (val["numLetters"] < newLength) {
+								newLength = val["numLetters"];
+								$("#solution").append("<h3>"+newLength+" letters</h3>");
+							}
+							$("#solution").append("&nbsp;&nbsp;"+val["word"]+"<br>");
+						});
+					});
+					//$("#waitDiv").remove();
+
+
+				});
+			});
+		</script>
+	</head>
+
+	<body>
+		<div id="params">
+			Please enter scramble problem:<br>
+			<input id= "scrambleProblem" type="text" name="scrambleProblem" />
+			<input id= "calculateButton" type="button" value="Calculate"/>
+		</div>
+		<div id="refreshingPanel" hidden>
+			<br>
+			<img width=50 height=50 src="{{ url_for('static', filename='Loading.gif') }}">
+		</div>
+		<div id="solution"></div>
+
+	</body>
+
+</html>
